@@ -6,21 +6,45 @@
   <title>Infinite Scrolling with Hive.js</title>
   <!-- Include Hive.js library -->
   <script src="https://cdn.jsdelivr.net/npm/@hiveio/hive-js/dist/hive.min.js"></script>
+  <link
+    href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
+    rel="stylesheet"
+/>
   <style>
     /* CSS for styling */
+    *{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html,body {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    overflow-x: hidden;
+}
     #posts-container {
       margin: 20px;
+        width: 40vw;
+        height: 60vh;
     }
     .post {
+     position: relative;
       padding: 10px;
       margin-bottom: 20px;
       border: 1px solid #ccc;
     }
     .post-title {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 5% 0 5%;
       font-weight: bold;
     }
-    .post-body {
-      margin-top: 5px;
+    img{
+        height: 80%;
+        width: 100%;
     }
   </style>
 </head>
@@ -34,7 +58,7 @@
       // Simulated data fetching (replace with your own data fetching logic)
       setTimeout(function() {
         // Create new items
-     hive.api.getDiscussionsByHot({ limit : 40, tag : "" }, async function(err, result) {
+     hive.api.getDiscussionsByTrending({ limit : 40, tag : "vihaan" }, async function(err, result) {
       function filterImagesByUser(result) {
         let userImages = {};
     
@@ -78,8 +102,8 @@
         const postElement = document.createElement('div');
         postElement.className = 'post';
         postElement.innerHTML = `
-            <img class="post-title" src="${post.images[0]}">
-            <div class="post-body">${post.username}</div>
+            <img class="post-img" src="${post.images[0]}">
+            <div class="post-title"><p>${post.username}</p> <button><i class="ri-heart-fill"></i></button></div>
           `;
           document.getElementById('posts-container').appendChild(postElement);
     })
