@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Infinite Scrolling with Hive.js</title>
+  <!-- Include Hive.js library -->
+  <script src="https://cdn.jsdelivr.net/npm/@hiveio/hive-js/dist/hive.min.js"></script>
+  <style>
+    /* CSS for styling */
+    #posts-container {
+      margin: 20px;
+    }
+    .post {
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+    }
+    .post-title {
+      font-weight: bold;
+    }
+    .post-body {
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div id="posts-container">
+    <!-- Content will be dynamically loaded here -->
+  </div>
+  <script>
+    // Function to load more items
+    function loadMoreItems() {
+      // Simulated data fetching (replace with your own data fetching logic)
+      setTimeout(function() {
+        // Create new items
+     hive.api.getDiscussionsByHot({ limit : 40, tag : "" }, async function(err, result) {
+      function filterImagesByUser(result) {
+        let userImages = {};
+    
+        result.forEach(post => {
+            const author = post.author;
+    
+            // Initialize user object if it doesn't exist
+            if (!userImages[author]) {
+                userImages[author] = {
+                    username: author,
+                    images: []
+                };
+            }
+
+            // Extracting image URLs from the body
+            const bodyImages = post.body.match(/!\[.*?\]\((.*?)\)/g);
+    
+            if (bodyImages) {
+                bodyImages.forEach(image => {
+                    // Extracting the URL from the markdown syntax
+                    const imageURL = image.match(/\((.*?)\)/)[1];
+                    // Check if the URL ends with .jpg or .png
+                    if (imageURL.toLowerCase().endsWith('.jpg') 
+                    || imageURL.toLowerCase().endsWith('.png')
+                ) {
+                        userImages[author].images.push(imageURL);
+                    }
+                });
+            }
+        });
+    
+        // Convert object to array of user objects
+       const userImagesArray = Object.values(userImages);
+        return userImagesArray;
+    }
+    
+    // Test the function with your data
+    var userImagesArray = await filterImagesByUser(result);
+    console.log(userImagesArray);
+    userImagesArray.forEach(function(post){
+        const postElement = document.createElement('div');
+        postElement.className = 'post';
+        postElement.innerHTML = `
+            <img class="post-title" src="${post.images[0]}">
+            <div class="post-body">${post.username}</div>
+          `;
+          document.getElementById('posts-container').appendChild(postElement);
+    })
+    });
+
+    
+      }, 1000); // Simulated delay
+    }
+
+    // Initial load of items
+    loadMoreItems();
+
+    // Event listener for scrolling
+    document.addEventListener('scroll', function() {
+      // Check if user has scrolled to the bottom of the page
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+        // Load more items
+        loadMoreItems();
+      }
+    });
+  </script>
+</body>
+</html>
